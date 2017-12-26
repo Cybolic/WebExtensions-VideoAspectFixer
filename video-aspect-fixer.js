@@ -128,9 +128,13 @@ const SITE_TWEAKS = {
 
 
 function showMiniNotification (text, view_size) {
+  let elements = document.querySelectorAll('.ultrawidevideofix-notification');
+  Array.from(elements || []).forEach(element => {
+    element.style.display = 'none';
+  });
   let element;
   element = document.createElement('div');
-  element.class    = 'ultrawidevideofix-notification';
+  element.setAttribute('class', 'ultrawidevideofix-notification');
   let style = 'position: absolute; ';
   if (view_size.notification && view_size.notification.useTopPosition) {
     style += `top: ${view_size.top + 8}px; `;
@@ -395,16 +399,16 @@ class VideoElement {
 
   cycleRatio (reverse = false) {
     this.cycleRatioIndex(reverse);
-        if (this.current_ratio === null) {
-          // Reset styling
-          this.removeStyling();
-          showMiniNotification('Original', getViewSize());
-        } else {
-          // Set styling for the new ratio
-          this.setStyling(this.current_ratio);
-          showMiniNotification(this.current_ratio, getViewSize());
-        }
+    if (this.current_ratio === null) {
+      // Reset styling
+      this.removeStyling();
+      showMiniNotification('Original', getViewSize());
+    } else {
+      // Set styling for the new ratio
+      this.setStyling(this.current_ratio);
+      showMiniNotification(this.current_ratio, getViewSize());
     }
+  }
 
   onFullscreen (event) {
     this.fullscreen = !this.fullscreen;
@@ -425,12 +429,12 @@ class VideoElement {
         this.current_ratio = RATIO_ORDER[current_index - 1];
       }
     } else {
-    if (current_index + 1 < RATIO_ORDER.length) {
-      this.current_ratio = RATIO_ORDER[current_index + 1];
-    } else {
-      this.current_ratio = RATIO_ORDER[0];
+      if (current_index + 1 < RATIO_ORDER.length) {
+        this.current_ratio = RATIO_ORDER[current_index + 1];
+      } else {
+        this.current_ratio = RATIO_ORDER[0];
+      }
     }
-  }
   }
 
   updateStyling () {
