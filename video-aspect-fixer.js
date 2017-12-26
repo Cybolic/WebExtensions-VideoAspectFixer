@@ -332,7 +332,6 @@ class VideoElement {
     // Bind event handlers to scope
     this.handlers = {
       init          : this.init.bind(this),
-      onKey         : this.onKey.bind(this),
       onFullscreen  : this.onFullscreen.bind(this),
       updateStyling : this.updateStyling.bind(this)
     };
@@ -390,17 +389,12 @@ class VideoElement {
   }
 
   attachEventHandlers () {
-    window.addEventListener('load', this.handlers.init);
-    document.addEventListener('keyup', this.handlers.onKey);
-
     window.addEventListener('resize', this.handlers.updateStyling);
     document.addEventListener('mozfullscreenchange', this.handlers.onFullscreen);
   }
 
-  onKey (event) {
-    switch (event.key) {
-      case KEY_BORDER:
-        this.cycleRatio();
+  cycleRatio (reverse = false) {
+    this.cycleRatioIndex(reverse);
         if (this.current_ratio === null) {
           // Reset styling
           this.removeStyling();
@@ -410,9 +404,7 @@ class VideoElement {
           this.setStyling(this.current_ratio);
           showMiniNotification(this.current_ratio, getViewSize());
         }
-        break;
     }
-  }
 
   onFullscreen (event) {
     this.fullscreen = !this.fullscreen;
@@ -424,13 +416,21 @@ class VideoElement {
     requestAnimationFrame(this.handlers.updateStyling);
   }
 
-  cycleRatio () {
+  cycleRatioIndex (reverse = false) {
     let current_index = RATIO_ORDER.indexOf(this.current_ratio);
+    if (reverse) {
+      if (current_index - 1 < 0) {
+        this.current_ratio = RATIO_ORDER[RATIO_ORDER.length - 1];
+      } else {
+        this.current_ratio = RATIO_ORDER[current_index - 1];
+      }
+    } else {
     if (current_index + 1 < RATIO_ORDER.length) {
       this.current_ratio = RATIO_ORDER[current_index + 1];
     } else {
       this.current_ratio = RATIO_ORDER[0];
     }
+  }
   }
 
   updateStyling () {
@@ -488,4 +488,15 @@ class VideoElement {
 }
 
 const videoElement = new VideoElement();
-videoElement.init();
+
+
+browser.runtime.onMessage.addListener( message => {
+  switch (message.command) {
+    case 'switch-ratio':
+      videoElement.cycleRatio();
+      break;
+    case 'switch-ratio-reverse':
+      videoElement.cycleRatio(true);
+      break;
+  }
+});

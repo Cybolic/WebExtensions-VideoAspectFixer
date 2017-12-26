@@ -3,21 +3,38 @@
   "manifest_version": 2,
   "name": "VideoAspectFixer",
   "version": "1.0.0.1",
-  "applications": {
-    "gecko": {
-      "id": "video-aspect-fixer@cybolic.me"
-    }
-  },
   "homepage_url": "https://github.com/Cybolic/WebExtensions-VideoAspectFixer",
   "icons": {
     "48": "icons/border-48.png",
     "96": "icons/border-96.png"
   },
+  "applications": {
+    "gecko": {
+      "strict_min_version": "48.0",
+      "id": "video-aspect-fixer@cybolic.me"
+    }
+  },
 
+  "permissions": ["activeTab"],
+
+  "background": {
+    "scripts": ["keybindings.js"]
+  },
   "content_scripts": [
     {
       "matches": ["*://*/*"],
       "js": ["video-aspect-fixer.js"]
     }
-  ]
+  ],
+
+  "commands": {
+    "switch-ratio": {
+      "suggested_key": { "default": "Ctrl+Shift+Period" },
+      "description": "Cycle the aspect ratio on the current video"
+    },
+    "switch-ratio-reverse": {
+      "suggested_key": { "default": "Ctrl+Shift+Comma" },
+      "description": "Cycle the aspect ratio on the current video (reversed)"
+    }
+  }
 }
